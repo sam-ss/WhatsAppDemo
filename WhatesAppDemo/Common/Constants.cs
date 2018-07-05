@@ -13,10 +13,11 @@ namespace WhatesAppDemo.Common
         public const string Send_Image = "send/image";
         public const string Send_Link = "send/link";
         public const string Send_Media = "send/media";
-        public const string Check_Account_Status = "send/status";
+        public const string Check_Account_Status = "status/";
         public const int TimeoutFotHttpsCallMilliSec = 90000;
 
-
+        public const string TOKEN = "b7d232c76a750e0933fd3becafe1203d5b3da12c05414";
+        public const string UID = "918668920518";
 
         //  public static object BaseUrl { get; internal set; }
 

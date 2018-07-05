@@ -55,6 +55,10 @@ namespace WhatesAppDemo
             this.txtMobileNumber = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtUserId = new System.Windows.Forms.TextBox();
+            this.btnCheckStatus = new System.Windows.Forms.Button();
+            this.txtStatusResult = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
@@ -66,6 +70,7 @@ namespace WhatesAppDemo
             this.grpMedia.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -101,7 +106,6 @@ namespace WhatesAppDemo
             this.tabPage1.Size = new System.Drawing.Size(888, 552);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Send Message";
-            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
             // grpMedia
             // 
@@ -274,7 +278,7 @@ namespace WhatesAppDemo
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(390, 298);
+            this.label3.Location = new System.Drawing.Point(390, 263);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 13);
             this.label3.TabIndex = 13;
@@ -282,11 +286,11 @@ namespace WhatesAppDemo
             // 
             // txtResponceStatus
             // 
-            this.txtResponceStatus.Location = new System.Drawing.Point(497, 295);
+            this.txtResponceStatus.Location = new System.Drawing.Point(497, 259);
             this.txtResponceStatus.Multiline = true;
             this.txtResponceStatus.Name = "txtResponceStatus";
             this.txtResponceStatus.ReadOnly = true;
-            this.txtResponceStatus.Size = new System.Drawing.Size(179, 107);
+            this.txtResponceStatus.Size = new System.Drawing.Size(197, 107);
             this.txtResponceStatus.TabIndex = 12;
             // 
             // label2
@@ -321,7 +325,6 @@ namespace WhatesAppDemo
             this.txtMobileNumber.Name = "txtMobileNumber";
             this.txtMobileNumber.Size = new System.Drawing.Size(214, 20);
             this.txtMobileNumber.TabIndex = 8;
-            this.txtMobileNumber.Text = "919021020620";
             // 
             // btnSend
             // 
@@ -336,11 +339,49 @@ namespace WhatesAppDemo
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage3.Controls.Add(this.label7);
+            this.tabPage3.Controls.Add(this.txtUserId);
+            this.tabPage3.Controls.Add(this.btnCheckStatus);
+            this.tabPage3.Controls.Add(this.txtStatusResult);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(888, 552);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Check Account Status";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(122, 87);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(29, 13);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Uid :";
+            // 
+            // txtUserId
+            // 
+            this.txtUserId.Location = new System.Drawing.Point(169, 84);
+            this.txtUserId.Name = "txtUserId";
+            this.txtUserId.Size = new System.Drawing.Size(214, 20);
+            this.txtUserId.TabIndex = 10;
+            // 
+            // btnCheckStatus
+            // 
+            this.btnCheckStatus.Location = new System.Drawing.Point(169, 132);
+            this.btnCheckStatus.Name = "btnCheckStatus";
+            this.btnCheckStatus.Size = new System.Drawing.Size(214, 37);
+            this.btnCheckStatus.TabIndex = 1;
+            this.btnCheckStatus.Text = "Check Account Status";
+            this.btnCheckStatus.UseVisualStyleBackColor = true;
+            this.btnCheckStatus.Click += new System.EventHandler(this.btnCheckStatus_Click);
+            // 
+            // txtStatusResult
+            // 
+            this.txtStatusResult.Location = new System.Drawing.Point(405, 84);
+            this.txtStatusResult.Multiline = true;
+            this.txtStatusResult.Name = "txtStatusResult";
+            this.txtStatusResult.Size = new System.Drawing.Size(270, 125);
+            this.txtStatusResult.TabIndex = 0;
             // 
             // tabPage4
             // 
@@ -380,7 +421,6 @@ namespace WhatesAppDemo
             this.txtUid.Name = "txtUid";
             this.txtUid.Size = new System.Drawing.Size(179, 20);
             this.txtUid.TabIndex = 12;
-            this.txtUid.Text = "918668920519";
             // 
             // label4
             // 
@@ -397,7 +437,6 @@ namespace WhatesAppDemo
             this.txtToken.Name = "txtToken";
             this.txtToken.Size = new System.Drawing.Size(179, 20);
             this.txtToken.TabIndex = 10;
-            this.txtToken.Text = "b7d232c76a750e0933fd3becafe1203d5b3da12c05415";
             // 
             // Form1
             // 
@@ -417,6 +456,8 @@ namespace WhatesAppDemo
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.ResumeLayout(false);
@@ -458,6 +499,10 @@ namespace WhatesAppDemo
         private System.Windows.Forms.Label lblUrlThumb;
         private System.Windows.Forms.TextBox txtUrlThumb;
         private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtUserId;
+        private System.Windows.Forms.Button btnCheckStatus;
+        private System.Windows.Forms.TextBox txtStatusResult;
     }
 }
 
