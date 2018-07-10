@@ -115,6 +115,7 @@
             // 
             this.txtFilePath.Location = new System.Drawing.Point(168, 180);
             this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.ReadOnly = true;
             this.txtFilePath.Size = new System.Drawing.Size(214, 20);
             this.txtFilePath.TabIndex = 21;
             // 
