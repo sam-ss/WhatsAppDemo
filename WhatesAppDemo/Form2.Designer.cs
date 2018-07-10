@@ -150,7 +150,7 @@
             this.Controls.Add(this.txtMobileNumber);
             this.Controls.Add(this.btnSend);
             this.Name = "Form2";
-            this.Text = "Form2";
+            this.Text = "Send Message";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -33,16 +33,12 @@ namespace WhatesAppDemo
             fdlg.RestoreDirectory = true;
             if (fdlg.ShowDialog() == DialogResult.OK)
             {
-                //txtFilePath.Text = fdlg.FileName;
                 txtFilePath.Text = Path.GetFileName(fdlg.FileName);
-              //  base64image = ImageToBase64(fdlg.FileName);
-
                 var base64Img = new Base64Image
                 {
                     FileContents = File.ReadAllBytes(fdlg.FileName),
                     ContentType = "image/jpg"
                 };
-
                  base64EncodedImg = base64Img.ToString();
             }
         }
@@ -75,7 +71,6 @@ namespace WhatesAppDemo
                     }
                     else
                     {
-
                         var imageURL = base64EncodedImg;
                         requestData.Add(new KeyValuePair<string, string>("body", imageURL));
                         requestData.Add(new KeyValuePair<string, string>("filename", txtFilePath.Text));

@@ -17,9 +17,6 @@ namespace WhatesAppDemo.Models
 
         [JsonProperty(PropertyName = "resultCode")]
         public int ResultCode { get; set; }
-      
-      
-
         public SendMessageModel(string errorCode) : base(errorCode)
         {
         }
