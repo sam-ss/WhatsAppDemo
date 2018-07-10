@@ -118,7 +118,7 @@ namespace WhatesAppDemo.RequestHandler
             {
                 using (var client = new HttpClient())
                 {
-                    var address = string.Format("{0}{1}", Constant.BaseUrl, url);
+                    var address = string.Format("{0}{1}", Constant.BaseUrl2, url);
                     //var nvc = new List<KeyValuePair<string, string>>();
                     //nvc.Add(new KeyValuePair<string, string>("Input1", "TEST2"));
                     //nvc.Add(new KeyValuePair<string, string>("Input2", "TEST2"));
