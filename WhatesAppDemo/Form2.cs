@@ -17,43 +17,29 @@ namespace WhatesAppDemo
     {
         ApiRequestHandler apiRequestHandler = new ApiRequestHandler();
         private string base64EncodedImg;
+        private string base64ExcelDocument;
 
         public Form2()
         {
             InitializeComponent();
-        }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog fdlg = new OpenFileDialog();
-            fdlg.Title = "Open File Dialog";
-            fdlg.InitialDirectory = @"c:\";
-            fdlg.Filter = "All files (*.*)|*.*|All files (*.*)|*.*";
-            fdlg.FilterIndex = 2;
-            fdlg.RestoreDirectory = true;
-            if (fdlg.ShowDialog() == DialogResult.OK)
-            {
-                txtFilePath.Text = Path.GetFileName(fdlg.FileName);
-                var base64Img = new Base64Image
-                {
-                    FileContents = File.ReadAllBytes(fdlg.FileName),
-                    ContentType = "image/jpg"
-                };
-                 base64EncodedImg = base64Img.ToString();
-            }
+            txtMessage.ReadOnly = true;
+            txtFilePath.ReadOnly = true;
+            btnFileDialog.Enabled = false;
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
+            string apiToBeCalled;
             if (string.IsNullOrEmpty(txtFilePath.Text.Trim()))
             {
-                string str = "message?token=" + Constant.TOKEN2; 
-                sendMessageAsync(str); 
+                apiToBeCalled = "message?token=" + Constant.TOKEN2;
+                sendMessageAsync(apiToBeCalled);
             }
             else
             {
-                string str = "sendFile?token=" + Constant.TOKEN2; 
-                sendMessageAsync(str);
+                apiToBeCalled = "sendFile?token=" + Constant.TOKEN2;
+                sendMessageAsync(apiToBeCalled);
             }
         }
 
@@ -63,25 +49,86 @@ namespace WhatesAppDemo
             {
                 if (!string.IsNullOrEmpty(txtMobileNumber.Text.Trim()))
                 {
-                    List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
-                    requestData.Add(new KeyValuePair<string, string>("phone", txtMobileNumber.Text.Trim()));
+                    Dictionary<string, string> requestData = new Dictionary<string, string>();
+                    requestData.Add("phone", txtMobileNumber.Text.Trim());
                     if (string.IsNullOrEmpty(txtFilePath.Text.Trim()))
-                    {  
-                        requestData.Add(new KeyValuePair<string, string>("body", txtMessage.Text.Trim()));
+                    {
+                        requestData.Add("body", txtMessage.Text.Trim());
                     }
                     else
                     {
-                        var imageURL = base64EncodedImg;
-                        requestData.Add(new KeyValuePair<string, string>("body", imageURL));
-                        requestData.Add(new KeyValuePair<string, string>("filename", txtFilePath.Text));
+                        requestData.Add("body", rbImage.Checked ? base64EncodedImg : base64ExcelDocument);
+                        requestData.Add("filename", txtFilePath.Text);
                     }
-                    var responceData = await apiRequestHandler.SendMessage(requestData, UrlPattern);
+                    var responceData = await apiRequestHandler.SendDictionaryMessage(requestData, UrlPattern);
                     txtResponceStatus.Text = responceData.ToString();
                 }
             }
             catch (Exception ex)
             {
             }
-        } 
+        }
+
+        private void rbTextMessage_CheckedChanged(object sender, EventArgs e)
+        {
+            txtMessage.ReadOnly = false;
+            txtMessage.Text = string.Empty;
+            txtFilePath.Text = string.Empty;
+            txtFilePath.ReadOnly = true;
+            btnFileDialog.Enabled = false;
+            txtResponceStatus.Text = string.Empty;
+        }
+
+        private void btnFileDilaog_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fdlg = new OpenFileDialog();
+            fdlg.Title = "Open File Dialog";
+            fdlg.InitialDirectory = @"D:\Org Level Activities\Rfps\Bajaj Allianz";
+            if (rbImage.Checked)
+                fdlg.Filter = "Image files (*.jpg, *.jpeg) | *.jpg; *.jpeg;";
+            else if (rbDocument.Checked)
+                fdlg.Filter = "Document files (*.xlsx) | *.xlsx;";
+            fdlg.FilterIndex = 2;
+            fdlg.RestoreDirectory = true;
+            if (fdlg.ShowDialog() == DialogResult.OK)
+            {
+                txtFilePath.Text = Path.GetFileName(fdlg.FileName);
+                if (rbImage.Checked)
+                {
+                    var base64Img = new Base64Image
+                    {
+                        FileContents = File.ReadAllBytes(fdlg.FileName),
+                        ContentType = "image/jpg"
+                    };
+                    base64EncodedImg = base64Img.ToString();
+                }
+                else if (rbDocument.Checked)
+                {
+                    Byte[] bytes = File.ReadAllBytes(fdlg.FileName);
+                    base64ExcelDocument = string.Format("data:attachment/xlsx;base64,{0}", Convert.ToBase64String(bytes));
+                }
+            }
+        }
+
+        private void rbImage_CheckedChanged(object sender, EventArgs e)
+        {
+            txtMessage.Text = string.Empty;
+            txtMessage.ReadOnly = true;
+            txtFilePath.ReadOnly = false;
+            btnFileDialog.Enabled = true;
+            txtFilePath.Text = string.Empty;
+            txtResponceStatus.Text = string.Empty;
+        }
+
+        private void rbDocument_CheckedChanged(object sender, EventArgs e)
+        {
+            txtMessage.Text = string.Empty;
+            txtMessage.ReadOnly = true;
+            txtFilePath.ReadOnly = false;
+            btnFileDialog.Enabled = true;
+            txtFilePath.Text = string.Empty;
+            txtResponceStatus.Text = string.Empty;
+
+        }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             this.label3 = new System.Windows.Forms.Label();
             this.txtResponceStatus = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -38,7 +39,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnFileDialog = new System.Windows.Forms.Button();
+            this.rbTextMessage = new System.Windows.Forms.RadioButton();
+            this.rbImage = new System.Windows.Forms.RadioButton();
+            this.rbDocument = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // label3
@@ -62,7 +66,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(106, 100);
+            this.label2.Location = new System.Drawing.Point(107, 145);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 13);
             this.label2.TabIndex = 18;
@@ -70,7 +74,7 @@
             // 
             // txtMessage
             // 
-            this.txtMessage.Location = new System.Drawing.Point(168, 97);
+            this.txtMessage.Location = new System.Drawing.Point(168, 121);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.Size = new System.Drawing.Size(214, 53);
@@ -105,7 +109,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(37, 183);
+            this.label4.Location = new System.Drawing.Point(55, 204);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(108, 13);
             this.label4.TabIndex = 22;
@@ -113,7 +117,7 @@
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(168, 180);
+            this.txtFilePath.Location = new System.Drawing.Point(168, 201);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.ReadOnly = true;
             this.txtFilePath.Size = new System.Drawing.Size(214, 20);
@@ -123,15 +127,51 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // button1
+            // btnFileDialog
             // 
-            this.button1.Location = new System.Drawing.Point(388, 180);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(142, 30);
-            this.button1.TabIndex = 23;
-            this.button1.Text = "Browse or Open a File";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnFileDialog.Location = new System.Drawing.Point(388, 196);
+            this.btnFileDialog.Name = "btnFileDialog";
+            this.btnFileDialog.Size = new System.Drawing.Size(142, 30);
+            this.btnFileDialog.TabIndex = 23;
+            this.btnFileDialog.Text = "Browse or Open a File";
+            this.btnFileDialog.UseVisualStyleBackColor = true;
+            this.btnFileDialog.Click += new System.EventHandler(this.btnFileDilaog_Click);
+            // 
+            // rbTextMessage
+            // 
+            this.rbTextMessage.AutoSize = true;
+            this.rbTextMessage.Location = new System.Drawing.Point(168, 87);
+            this.rbTextMessage.Name = "rbTextMessage";
+            this.rbTextMessage.Size = new System.Drawing.Size(92, 17);
+            this.rbTextMessage.TabIndex = 24;
+            this.rbTextMessage.TabStop = true;
+            this.rbTextMessage.Text = "Text Message";
+            this.rbTextMessage.UseVisualStyleBackColor = true;
+            this.rbTextMessage.CheckedChanged += new System.EventHandler(this.rbTextMessage_CheckedChanged);
+            // 
+            // rbImage
+            // 
+            this.rbImage.AutoSize = true;
+            this.rbImage.Location = new System.Drawing.Point(266, 87);
+            this.rbImage.Name = "rbImage";
+            this.rbImage.Size = new System.Drawing.Size(54, 17);
+            this.rbImage.TabIndex = 25;
+            this.rbImage.TabStop = true;
+            this.rbImage.Text = "Image";
+            this.rbImage.UseVisualStyleBackColor = true;
+            this.rbImage.CheckedChanged += new System.EventHandler(this.rbImage_CheckedChanged);
+            // 
+            // rbDocument
+            // 
+            this.rbDocument.AutoSize = true;
+            this.rbDocument.Location = new System.Drawing.Point(328, 87);
+            this.rbDocument.Name = "rbDocument";
+            this.rbDocument.Size = new System.Drawing.Size(74, 17);
+            this.rbDocument.TabIndex = 26;
+            this.rbDocument.TabStop = true;
+            this.rbDocument.Text = "Document";
+            this.rbDocument.UseVisualStyleBackColor = true;
+            this.rbDocument.CheckedChanged += new System.EventHandler(this.rbDocument_CheckedChanged);
             // 
             // Form2
             // 
@@ -139,7 +179,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.rbDocument);
+            this.Controls.Add(this.rbImage);
+            this.Controls.Add(this.rbTextMessage);
+            this.Controls.Add(this.btnFileDialog);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtFilePath);
             this.Controls.Add(this.label3);
@@ -149,8 +192,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtMobileNumber);
             this.Controls.Add(this.btnSend);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form2";
-            this.Text = "Send Message";
+            this.Text = "WhatsApp Communicator";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -168,6 +212,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtFilePath;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnFileDialog;
+        private System.Windows.Forms.RadioButton rbTextMessage;
+        private System.Windows.Forms.RadioButton rbImage;
+        private System.Windows.Forms.RadioButton rbDocument;
     }
 }

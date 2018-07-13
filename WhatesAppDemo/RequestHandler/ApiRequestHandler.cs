@@ -14,7 +14,22 @@ namespace WhatesAppDemo.RequestHandler
             apiProxy = new ApiProxy();
         }
 
-        public async Task<string> SendMessage(List<KeyValuePair<string, string>> request, string url)
+        public async Task<string> SendKeyValueMessage(List<KeyValuePair<string, string>> request, string url)
+        {
+            string response = null;
+            var apiResponse = await apiProxy.PostAsyncEncodedContent(url, request);
+            //var apiResponse = await apiProxy.PostAsync(url, request);
+            if (apiResponse.IsSuccessStatusCode)
+            {
+                var customerJsonString = await apiResponse.Content.ReadAsStringAsync();
+                response = customerJsonString;
+
+            }
+
+            return response;
+        }
+
+        public async Task<string> SendDictionaryMessage(Dictionary<string, string> request, string url)
         {
             string response = null;
             var apiResponse = await apiProxy.PostAsyncEncodedContent(url, request);
@@ -22,7 +37,7 @@ namespace WhatesAppDemo.RequestHandler
             {
                 var customerJsonString = await apiResponse.Content.ReadAsStringAsync();
                 response = customerJsonString;
-               
+
             }
 
             return response;

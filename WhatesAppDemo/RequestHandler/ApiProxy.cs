@@ -89,7 +89,7 @@ namespace WhatesAppDemo.RequestHandler
             {
                 using (var client = CreateClient(addAuthHeader, token))
                 {
-                    var address = string.Format("{0}{1}", Constant.BaseUrl, url);
+                    var address = string.Format("{0}{1}", Constant.BaseUrl2, url);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     response = await client.PostAsync(address, content, cts.Token);
                 }
@@ -112,6 +112,7 @@ namespace WhatesAppDemo.RequestHandler
         public async Task<HttpResponseMessage> PostAsyncEncodedContent(string url, List<KeyValuePair<string, string>> data, bool addAuthHeader = false, string token = null)
         {
             var json = JsonConvert.SerializeObject(data);
+            var output = Newtonsoft.Json.JsonConvert.SerializeObject(data);
             HttpResponseMessage response = null;
             var cts = new CancellationTokenSource();
             try
@@ -119,7 +120,7 @@ namespace WhatesAppDemo.RequestHandler
                 using (var client = new HttpClient())
                 {
                     var address = string.Format("{0}{1}", Constant.BaseUrl2, url);
-                    var req = new HttpRequestMessage(HttpMethod.Post, address) { Content = new FormUrlEncodedContent(data) };
+                    var req = new HttpRequestMessage(HttpMethod.Post, address) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
                     response = await client.SendAsync(req);
                 }
 
@@ -129,7 +130,37 @@ namespace WhatesAppDemo.RequestHandler
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout);
             }
-            catch
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+        }
+        public async Task<HttpResponseMessage> PostAsyncEncodedContent(string url, Dictionary<string, string> data, bool addAuthHeader = false, string token = null)
+        {
+            var json = JsonConvert.SerializeObject(data);
+            var output = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            HttpResponseMessage response = null;
+            var cts = new CancellationTokenSource();
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var address = string.Format("{0}{1}", Constant.BaseUrl2, url);
+                    var req = new HttpRequestMessage(HttpMethod.Post, address) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+                    response = await client.SendAsync(req);
+                }
+
+                return response;
+            }
+            catch (TaskCanceledException)
+            {
+                return new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout);
+            }
+            catch (Exception ex)
             {
                 return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
             }
