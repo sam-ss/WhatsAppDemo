@@ -1,0 +1,212 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Whats App Communicator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+</head>
+<body>
+
+    <div class="container">
+        <div class="py-5 text-center">
+            <h2>WhatsAppp Communicator</h2>
+            <p class="lead">Send Messages , Documents , Links To Any whatsapp account.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Received Response</span>
+                </h4>
+                <textarea class="form-control" rows="10" id="comment"></textarea>
+            </div>
+            <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">
+                    <span class="text-muted">Request</span>
+                </h4>
+                <form class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <h6 class="mb-3">Recipient Mobile Number</h6>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"></span>
+                            </div>
+                            <input type="text" class="form-control" id="recipientMobileNumber" placeholder="+91-###-###-####" required onfocus="this.placeholder = ''" onblur="this.placeholder = '+91-###-###-####'" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="mb-3">Communication Type</h6>
+                        <div class="custom-control custom-radio">
+                            <input id="messageRadioButton" name="communicationType" type="radio" class="custom-control-input" checked required>
+                            <label class="custom-control-label" for="messageRadioButton" onclick="toggleFileBrowser('')">Message</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input id="imageRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
+                            <label class="custom-control-label" for="imageRadioButton" onclick="toggleFileBrowser('.jpg,.png,.gif')">Image</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input id="documentRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
+                            <label class="custom-control-label" for="documentRadioButton" onclick="toggleFileBrowser('.xlsx,.docx,.pdf')">Document</label>
+                        </div>
+                    </div>
+                    <div class="mb-3" id="messageDiv">
+                        <h6 class="mb-3">Message To be Sent</h6>
+                        <input type="text" class="form-control" id="message" placeholder="Hello This is test message">
+                    </div>
+
+                    <div class="mb-3" id="customFileDiv">
+                        <h6 class="mb-3" id="selecImageH6">Select Image</h6>
+                        <div class="custom-file" lang="es">
+                            <form id="uploadImageForm" enctype="multipart/form-data">
+                                <input type="file" class="custom-file-input" id="fileUpload" aria-describedby="fileHelp" accept=".jpg,.gif,.png" onchange="showSelectedFileName(this)">
+                                <label class="custom-file-label" for="fileUpload" id="fileUploadTextPlaceHolder">
+                                    Browse Image...
+                                </label>
+                            </form>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg btn-block" type="button" onclick="invokeWhatsAppIntegrationAPI()">Send To WhatsApp</button>
+                </form>
+            </div>
+        </div>
+
+        <footer class="my-4 pt-1 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2017-2018 Xpanxion India Pvt. Ltd.</p>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="https://www.xpanxion.com/">Privacy</a></li>
+                <li class="list-inline-item"><a href="https://www.xpanxion.com/">Terms</a></li>
+                <li class="list-inline-item"><a href="https://www.xpanxion.com/contact/">Support</a></li>
+            </ul>
+        </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#customFileDiv').hide();
+            $('#messageDiv').show();
+        });
+
+        function showSelectedFileName(fileUpload) {
+            if (fileUpload.files != null && fileUpload.files != undefined && fileUpload.files.length > 0) {
+                var fileName = fileUpload.files[0].name;
+                $('#fileUploadTextPlaceHolder')[0].innerText = fileName;
+            }
+        }
+        function toggleFileBrowser(fileType) {
+            var fileUploadInput = $('#fileUpload')[0];
+
+            if (fileType == '') {
+                $('#customFileDiv').hide();
+                $('#messageDiv').show();
+            }
+            else {
+                $('#customFileDiv').show();
+                $('#messageDiv').hide();
+                if (fileType == '.jpg,.png,.gif') {
+                    $('#selecImageH6')[0].innerText = "Select Image";
+                    $('#fileUploadTextPlaceHolder')[0].innerText = 'Browse Image';
+                }
+                else {
+                    $('#selecImageH6')[0].innerText = "Select Document";
+                    $('#fileUploadTextPlaceHolder')[0].innerText = 'Browse Document';
+                }
+                fileUploadInput.attributes.accept.value = fileType;
+            }
+        }
+
+        function getMobileNumber() {
+            var mobileNumber = $("#recipientMobileNumber").val();
+            mobileNumber = mobileNumber.replace(/\-/g, '');
+            mobileNumber = mobileNumber.replace(/\+/g, '');
+            mobileNumber = mobileNumber.replace(/\(/g, '');
+            mobileNumber = mobileNumber.replace(/\)/g, '');
+            if (mobileNumber.length != 12)
+                $("#recipientMobileNumber").focus();
+            return mobileNumber;
+        }
+
+        function invokeWhatsAppIntegrationAPI() {
+            var mobileNumber = getMobileNumber();
+            if (mobileNumber.length == 12) {
+                var selectedCommunicationType = $("input[name='communicationType']:checked")[0].id;
+                if (selectedCommunicationType == "messageRadioButton") {
+                    var request = new Object();
+                    request.recipientMobileNumber = mobileNumber;
+                    request.message = $("#message").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/ChatApi/SendMessage",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: JSON.stringify(request),
+                        success: function (data) {
+                            console.log(data);
+                        },
+                        failure: function (data) {
+                            alert(data.responseText);
+                        },
+                        error: function (data) {
+                            alert(data.responseText);
+                        }
+                    });
+                }
+                else if (selectedCommunicationType == "imageRadioButton") {
+
+                    var formData = new FormData();
+                    var file = $('#fileUpload')[0];
+                    formData.append('file', file.files[0]);
+                    formData.append('recipientMobileNumber', mobileNumber);
+
+                    $.ajax({
+                        url: '/api/ChatApi/SendImage',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (d) {
+                            alert("Image Sent Successfully");
+                        },
+                        error: function () {
+                            alert("Faild to send Image try again");
+                        }
+                    });
+                }
+                else if (selectedCommunicationType == "documentRadioButton") {
+                    var formData = new FormData();
+                    var file = $('#fileUpload')[0];
+                    formData.append('file', file.files[0]);
+                    formData.append('recipientMobileNumber', mobileNumber);
+
+                    $.ajax({
+                        url: '/api/ChatApi/SendMedia',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (d) {
+                            alert("Document Sent Successfully");
+                        },
+                        error: function () {
+                            alert("Faild to send document try again");
+                        }
+                    });
+                }
+            }
+            else {
+                alert("Please Enter Valid Mobile Number with Conuntry Code");
+
+            }
+
+        }
+    </script>
+</body>
+</html>
