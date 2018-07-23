@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using WhatsAppDemo.ApiContracts;
+using WhatsAppDemo.ApiContracts.WeboxAppApi;
 using WhatsAppDemo.Common;
 using WhatsAppDemo.Models;
 
@@ -29,13 +30,22 @@ namespace WhatsAppDemo.Controllers
 
         [HttpPost]
         [Route("SendMessage")]
-        public IActionResult SendMessage([FromForm] SendMessageRequest request)
+        public IActionResult SendMessage([FromBody] string request)
         {
-            var result = GetRecentResponses();
-            /*
-            WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
-            serviceBridge.SendWhatsAppMessage(request);
-            */
+            SendMessageRequest inputRequest = JsonConvert.DeserializeObject<SendMessageRequest>(request);
+            ApiType apiType = (ApiType)Enum.Parse(typeof(ApiType), inputRequest.ApiName);
+
+            if (apiType == ApiType.WeboxAppApi)
+            {
+                WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
+                serviceBridge.SendWhatsAppMessage(inputRequest);
+            }
+            else if (apiType == ApiType.ChatApi)
+            {
+                ChatApiServiceBridge serviceBridge = new ChatApiServiceBridge();
+                serviceBridge.SendWhatsAppMessage(inputRequest);
+            }
+
             return Ok("received : " + request);
         }
 
@@ -43,29 +53,48 @@ namespace WhatsAppDemo.Controllers
         [Route("SendImage")]
         public IActionResult SendImage(SendImageRequest request)
         {
+            ApiType apiType = (ApiType)Enum.Parse(typeof(ApiType), request.ApiName);
+
             if (request.File != null)
             {
-                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
                 if (request.File.Length > 0)
                 {
-                    var filePath = Path.Combine(uploads, request.File.FileName);
-
                     var tempPath = Path.GetTempFileName();
 
                     using (var stream = new FileStream(tempPath, FileMode.Create))
                     {
                         request.File.CopyToAsync(stream);
                     }
-                    using (var stream = new FileStream(tempPath, FileMode.Open))
-                    {
-                        request.Url = WriteMediaToBlobStorage(stream, request.File.FileName);
 
-                        if (!string.IsNullOrEmpty(request.Url))
+                    if (apiType == ApiType.WeboxAppApi)
+                    {
+
+                        using (var stream = new FileStream(tempPath, FileMode.Open))
                         {
-                            WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
-                            serviceBridge.SendWhatsAppImage(request);
+                            request.Url = WriteMediaToBlobStorage(apiType, stream, request.File.FileName);
+
+                            if (!string.IsNullOrEmpty(request.Url))
+                            {
+                                WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
+                                serviceBridge.SendWhatsAppImage(request);
+                            }
                         }
                     }
+                    else if (apiType == ApiType.ChatApi)
+                    {
+                        Byte[] bytes = System.IO.File.ReadAllBytes(tempPath);
+
+                        if (request.File.FileName.Contains(".jpg"))
+                            request.Url = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(bytes));
+                        else if (request.File.FileName.Contains(".png"))
+                            request.Url = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bytes));
+                        else if (request.File.FileName.Contains(".bmp"))
+                            request.Url = string.Format("data:image/bmp;base64,{0}", Convert.ToBase64String(bytes));
+                        ChatApiServiceBridge serviceBridge = new ChatApiServiceBridge();
+                        serviceBridge.SendWhatsAppImage(request);
+
+                    }
+
                 }
             }
 
@@ -76,33 +105,67 @@ namespace WhatsAppDemo.Controllers
         [Route("SendMedia")]
         public IActionResult SendMedia(SendMediaRequest request)
         {
+            ApiType apiType = (ApiType)Enum.Parse(typeof(ApiType), request.ApiName);
+
             if (request.File != null)
             {
-                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
                 if (request.File.Length > 0)
                 {
-                    var filePath = Path.Combine(uploads, request.File.FileName);
-
                     var tempPath = Path.GetTempFileName();
-
                     using (var stream = new FileStream(tempPath, FileMode.Create))
                     {
                         request.File.CopyToAsync(stream);
                     }
-                    using (var stream = new FileStream(tempPath, FileMode.Open))
-                    {
-                        request.Url = WriteMediaToBlobStorage(stream, request.File.FileName);
 
-                        if (!string.IsNullOrEmpty(request.Url))
+                    if (apiType == ApiType.WeboxAppApi)
+                    {
+                        using (var stream = new FileStream(tempPath, FileMode.Open))
                         {
-                            WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
-                            serviceBridge.SendWhatsAppMedia(request);
+                            request.Url = WriteMediaToBlobStorage(apiType, stream, request.File.FileName);
+
+                            if (!string.IsNullOrEmpty(request.Url))
+                            {
+                                WeboxappServiceBridge serviceBridge = new WeboxappServiceBridge();
+                                serviceBridge.SendWhatsAppMedia(request);
+                            }
                         }
                     }
+                    else if (apiType == ApiType.ChatApi)
+                    {
+                        Byte[] bytes = System.IO.File.ReadAllBytes(tempPath);
+
+                        if (request.File.FileName.Contains(".xlsx"))
+                            request.Url = string.Format("data:attachment/xlsx;base64,{0}", Convert.ToBase64String(bytes));
+                        /*
+                        else if (request.File.FileName.Contains(".png"))
+                            request.Url = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bytes));
+                        else if (request.File.FileName.Contains(".bmp"))
+                            request.Url = string.Format("data:image/bmp;base64,{0}", Convert.ToBase64String(bytes));
+                        */
+                        ChatApiServiceBridge serviceBridge = new ChatApiServiceBridge();
+                        serviceBridge.SendWhatsAppMedia(request);
+
+                    }
                 }
+
             }
 
             return Ok("Uploaded");
+        }
+
+        [HttpPost]
+        [Route("Hook")]
+        public async Task<ContentResult> Hook([FromBody] string body)
+        {
+            WriteMessageToBlobStorage(body, ApiType.ChatApi);
+
+            ContentResult response = new ContentResult
+            {
+                Content = body,
+                StatusCode = 200
+            };
+
+            return await Task.FromResult(response);
         }
 
         [HttpPost]
@@ -110,115 +173,143 @@ namespace WhatsAppDemo.Controllers
         {
             ContentResult response = null;
 
-            if (!string.IsNullOrEmpty(body))
+            Hook receivedHook = new Hook();
+            receivedHook.Contact = new Contact();
+            receivedHook.Message = new Message();
+            foreach (var eachKey in Request.Form.Keys)
             {
-                WriteMessageToBlobStorage(body);
-
-                response = new ContentResult
-                {
-                    Content = body,
-                    StatusCode = 200
-                };
-            }
-            else
-            {
-                Hook receivedHook = new Hook();
-                receivedHook.Contact = new Contact();
-                receivedHook.Message = new Message();
-                foreach (var eachKey in Request.Form.Keys)
-                {
-                    if (eachKey == "event")
-                        receivedHook.Event = Request.Form[eachKey];
-                    else if (eachKey == "token")
-                        receivedHook.Token = Request.Form[eachKey];
-                    else if (eachKey == "uid")
-                        receivedHook.Uid = Request.Form[eachKey];
-                    else if (eachKey == "contact[uid]")
-                        receivedHook.Contact.Uid = Request.Form[eachKey];
-                    else if (eachKey == "contact[name]")
-                        receivedHook.Contact.Name = Request.Form[eachKey];
-                    else if (eachKey == "contact[type]")
-                        receivedHook.Contact.Type = Request.Form[eachKey];
-                    else if (eachKey == "message[dtm]")
-                        receivedHook.Message.Dtm = Request.Form[eachKey];
-                    else if (eachKey == "message[uid]")
-                        receivedHook.Message.Uid = Request.Form[eachKey];
-                    else if (eachKey == "message[cuid]")
-                        receivedHook.Message.Cuid = Request.Form[eachKey];
-                    else if (eachKey == "message[dir]")
-                        receivedHook.Message.Dir = Request.Form[eachKey];
-                    else if (eachKey == "message[type]")
-                        receivedHook.Message.Type = Request.Form[eachKey];
-                    else if (eachKey == "message[body][text]")
-                        receivedHook.Message.Body = Request.Form[eachKey];
-                    else if (eachKey == "message[ack]")
-                        receivedHook.Message.Ack = Request.Form[eachKey];
-                }
-
-                WriteMessageToBlobStorage(receivedHook);
-
-                response = new ContentResult
-                {
-                    Content = JsonConvert.SerializeObject(receivedHook, new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    }),
-                    StatusCode = 200
-                };
+                if (eachKey == "event")
+                    receivedHook.Event = Request.Form[eachKey];
+                else if (eachKey == "token")
+                    receivedHook.Token = Request.Form[eachKey];
+                else if (eachKey == "uid")
+                    receivedHook.Uid = Request.Form[eachKey];
+                else if (eachKey == "contact[uid]")
+                    receivedHook.Contact.Uid = Request.Form[eachKey];
+                else if (eachKey == "contact[name]")
+                    receivedHook.Contact.Name = Request.Form[eachKey];
+                else if (eachKey == "contact[type]")
+                    receivedHook.Contact.Type = Request.Form[eachKey];
+                else if (eachKey == "message[dtm]")
+                    receivedHook.Message.Dtm = Request.Form[eachKey];
+                else if (eachKey == "message[uid]")
+                    receivedHook.Message.Uid = Request.Form[eachKey];
+                else if (eachKey == "message[cuid]")
+                    receivedHook.Message.Cuid = Request.Form[eachKey];
+                else if (eachKey == "message[dir]")
+                    receivedHook.Message.Dir = Request.Form[eachKey];
+                else if (eachKey == "message[type]")
+                    receivedHook.Message.Type = Request.Form[eachKey];
+                else if (eachKey == "message[body][text]")
+                    receivedHook.Message.Body = Request.Form[eachKey];
+                else if (eachKey == "message[ack]")
+                    receivedHook.Message.Ack = Request.Form[eachKey];
             }
 
+            WriteMessageToBlobStorage(receivedHook, ApiType.WeboxAppApi);
+
+            response = new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(receivedHook, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }),
+                StatusCode = 200
+            };
 
             return await Task.FromResult(response);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("GetRecentResponses")]
-        public JsonResult GetRecentResponses()
+        public JsonResult GetRecentResponses([FromBody] string selectedApiType)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.StorageConnectionString);
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference(Constants.ApiHooksContainer);
-            BlobContinuationToken continuationToken = null;
-            List<Hook> receivedHooks = new List<Hook>();
-            do
+            ApiType apiType = (ApiType)Enum.Parse(typeof(ApiType), selectedApiType);
+            if (apiType == ApiType.WeboxAppApi)
             {
-                var response = container.ListBlobsSegmentedAsync(string.Empty, true, BlobListingDetails.None, new int?(), continuationToken, null, null);
-                continuationToken = response.Result.ContinuationToken;
-                foreach (var blob in response.Result.Results.OfType<CloudBlockBlob>())
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.StorageConnectionString);
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference(Constants.WeboxAppApiHooksContainer);
+                BlobContinuationToken continuationToken = null;
+                List<Hook> receivedHooks = new List<Hook>();
+                do
                 {
-                    var blobData = blob.DownloadTextAsync().Result;
-                    receivedHooks.Add(JsonConvert.DeserializeObject<Hook>(blobData));
-                }
-            } while (continuationToken != null);
+                    var response = container.ListBlobsSegmentedAsync(string.Empty, true, BlobListingDetails.None, new int?(), continuationToken, null, null);
+                    continuationToken = response.Result.ContinuationToken;
+                    foreach (var blob in response.Result.Results.OfType<CloudBlockBlob>())
+                    {
+                        var blobData = blob.DownloadTextAsync().Result;
+                        receivedHooks.Add(JsonConvert.DeserializeObject<Hook>(blobData));
+                    }
+                } while (continuationToken != null);
 
 
-            List<ReceviedResponseModel> receviedResponses = MapResponseToHoks(receivedHooks);
+                List<ReceviedResponseModel> receviedResponses = MapResponseToHoks(receivedHooks);
+                return Json(receviedResponses);
+            }
+            else if (apiType == ApiType.ChatApi)
+            {
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Constants.StorageConnectionString);
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference(Constants.ChatApiHooksContainer);
+                BlobContinuationToken continuationToken = null;
+                List<WhatsAppDemo.ApiContracts.ChatApi.Hook> receivedHooks = new List<WhatsAppDemo.ApiContracts.ChatApi.Hook>();
+                do
+                {
+                    var response = container.ListBlobsSegmentedAsync(string.Empty, true, BlobListingDetails.None, new int?(), continuationToken, null, null);
+                    continuationToken = response.Result.ContinuationToken;
+                    foreach (var blob in response.Result.Results.OfType<CloudBlockBlob>())
+                    {
+                        var blobData = blob.DownloadTextAsync().Result;
+                        receivedHooks.Add(JsonConvert.DeserializeObject<WhatsAppDemo.ApiContracts.ChatApi.Hook>(JsonConvert.DeserializeObject<string>(blobData)));
+                    }
+                } while (continuationToken != null);
 
-            return Json(receviedResponses);
+
+                List<ReceviedResponseModel> receviedResponses = MapResponseToHoks(receivedHooks);
+                return Json(receviedResponses);
+            }
+
+            return null;
         }
 
-        private void WriteMessageToBlobStorage(object body)
+        private void WriteMessageToBlobStorage(object body, ApiType apiType)
         {
-            var uploadToBlobStorage = new UploadToBlobStorageAsJson(body,
-                                                                Constants.ApiHooksContainer,
-                                                                string.Format("receivedobject{0}.json", Guid.NewGuid()));
+            UploadToBlobStorageAsJson uploadToBlobStorage = null;
 
+            if (apiType == ApiType.WeboxAppApi)
+            {
+                uploadToBlobStorage = new UploadToBlobStorageAsJson(body,
+                                                                    Constants.WeboxAppApiHooksContainer,
+                                                                    string.Format("receivedobject{0}.json", Guid.NewGuid()));
+            }
+            if (apiType == ApiType.ChatApi)
+            {
+                uploadToBlobStorage = new UploadToBlobStorageAsJson(body,
+                                                                    Constants.ChatApiHooksContainer,
+                                                                    string.Format("receivedobject{0}.json", Guid.NewGuid()));
+            }
             var storageAccount = CloudStorageAccount.Parse(Constants.StorageConnectionString);
 
             uploadToBlobStorage.Apply(storageAccount);
         }
 
-        private string WriteMediaToBlobStorage(FileStream fileStream, string fileName)
+        private string WriteMediaToBlobStorage(ApiType apiType, FileStream fileStream, string fileName)
         {
-            var uploadToBlobStorage = new UploadToBlobStorageAsJson(fileStream,
-                                                                Constants.ApiMediaContainer,
-                                                                fileName);
-
             var storageAccount = CloudStorageAccount.Parse(Constants.StorageConnectionString);
 
-            return uploadToBlobStorage.ApplyMedia(storageAccount);
-        }
+            if (apiType == ApiType.WeboxAppApi)
+            {
+                UploadToBlobStorageAsJson uploadToBlobStorage = new UploadToBlobStorageAsJson(fileStream,
+                                                                Constants.WeboxAppApiMediaContainer,
+                                                                fileName);
 
+
+                return uploadToBlobStorage.ApplyMedia(storageAccount);
+            }
+
+            return string.Empty;
+        }
         private List<ReceviedResponseModel> MapResponseToHoks(List<Hook> receivedHooks)
         {
             List<ReceviedResponseModel> receivedResponses = new List<ReceviedResponseModel>();
@@ -232,6 +323,27 @@ namespace WhatsAppDemo.Controllers
                     Response = eachHook.Message.Body,
                     ReceivedAt = eachHook.Message.Dtm.FromTimeStampToDateTime().Add(new TimeSpan(5, 30, 00))
                 });
+            });
+
+            return receivedResponses;
+        }
+
+        private List<ReceviedResponseModel> MapResponseToHoks(List<WhatsAppDemo.ApiContracts.ChatApi.Hook> receivedHooks)
+        {
+            List<ReceviedResponseModel> receivedResponses = new List<ReceviedResponseModel>();
+
+            receivedHooks.ForEach(eachHook =>
+            {
+                if (!eachHook.Messages[0].FromMe)
+                {
+                    receivedResponses.Add(new ReceviedResponseModel
+                    {
+                        ReceivedFrom = eachHook.Messages[0].SenderName,
+                        ReceivedFromNumber = eachHook.Messages[0].ChatId.Substring(1, eachHook.Messages[0].ChatId.IndexOf("@")),
+                        Response = eachHook.Messages[0].Body,
+                        ReceivedAt = eachHook.Messages[0].Time.FromTimeStampToDateTime().Add(new TimeSpan(5, 30, 00))
+                    });
+                }
             });
 
             return receivedResponses;

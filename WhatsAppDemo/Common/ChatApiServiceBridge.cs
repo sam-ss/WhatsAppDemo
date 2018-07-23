@@ -4,16 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WhatsAppDemo.ApiContracts;
+using WhatsAppDemo.ApiContracts.ChatApi;
 using WhatsAppDemo.Models;
-using System.Net.Http;
-using WhatsAppDemo.ApiContracts.WeboxAppApi;
 
 namespace WhatsAppDemo.Common
 {
-    public class WeboxappServiceBridge
+    public class ChatApiServiceBridge
     {
-
         public string SendWhatsAppMessage(SendMessageRequest request)
         {
             var jsonRequest = GetJsonMessageForSendMessageEndpoint(request);
@@ -21,7 +18,7 @@ namespace WhatsAppDemo.Common
             ApiProxy apiProxy = new ApiProxy();
 
             string response = null;
-            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.WeboxAppApi, Constants.WeboxAppApiSendMessagePOSTEndPoint, jsonRequest);
+            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.ChatApi, Constants.ChatApiSendMessagePOSTEndPoint, jsonRequest);
             if (apiResponse != null)
             {
                 if (apiResponse.Result.IsSuccessStatusCode)
@@ -41,7 +38,7 @@ namespace WhatsAppDemo.Common
             ApiProxy apiProxy = new ApiProxy();
 
             string response = null;
-            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.WeboxAppApi, Constants.WeboxAppApiSendImagePOSTEndPoint, jsonRequest);
+            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.ChatApi, Constants.ChatApiSendImagePOSTEndPoint, jsonRequest);
             if (apiResponse != null)
             {
                 if (apiResponse.Result.IsSuccessStatusCode)
@@ -61,13 +58,14 @@ namespace WhatsAppDemo.Common
             ApiProxy apiProxy = new ApiProxy();
 
             string response = null;
-            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.WeboxAppApi, Constants.WeboxAppApiSendMediaPOSTEndPoint, jsonRequest);
+            var apiResponse = apiProxy.PostAsyncEncodedContent(ApiType.ChatApi, Constants.ChatApiSendMediaPOSTEndPoint, jsonRequest);
             if (apiResponse != null)
             {
                 if (apiResponse.Result.IsSuccessStatusCode)
                 {
                     var customerJsonString = apiResponse.Result.Content.ReadAsStringAsync().Result;
                     response = customerJsonString;
+
                 }
             }
             return response;
@@ -75,7 +73,7 @@ namespace WhatsAppDemo.Common
 
         private string GetJsonMessageForSendMessageEndpoint(SendMessageRequest request)
         {
-            return JsonConvert.SerializeObject(MapToChatRequest(request), new JsonSerializerSettings
+            return JsonConvert.SerializeObject(MapToMessageRequest(request), new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
@@ -96,16 +94,12 @@ namespace WhatsAppDemo.Common
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
         }
-
-        private Chat MapToChatRequest(SendMessageRequest request)
+        private Message MapToMessageRequest(SendMessageRequest request)
         {
-            return new Chat
+            return new Message
             {
-                Token = Constants.WeboxAppApiToken,
-                Uid = request.SenderMobileNumber,
-                Customer_uid = request.CustomUniqueID,
-                To = request.RecipientMobileNumber,
-                text = request.Message
+                Phone = request.RecipientMobileNumber,
+                body = request.Message
             };
         }
 
@@ -113,13 +107,9 @@ namespace WhatsAppDemo.Common
         {
             return new Image
             {
-                Token = Constants.WeboxAppApiToken,
-                Uid = request.SenderMobileNumber,
-                Customer_uid = request.CustomUniqueID,
-                To = request.RecipientMobileNumber,
-                Url = request.Url,
-                Caption = request.Caption,
-                Description = request.Description
+                Phone = request.RecipientMobileNumber,
+                body = request.Url,
+                filename = request.File.FileName
             };
         }
 
@@ -127,18 +117,10 @@ namespace WhatsAppDemo.Common
         {
             return new Media
             {
-                Token = Constants.WeboxAppApiToken,
-                Uid = request.SenderMobileNumber,
-                Customer_uid = request.CustomUniqueID,
-                To = request.RecipientMobileNumber,
-                Url = request.Url,
-                Caption = request.Caption,
-                Description = request.Description
+                Phone = request.RecipientMobileNumber,
+                body = request.Url,
+                filename = request.File.FileName
             };
         }
     }
-
-
-
-
 }

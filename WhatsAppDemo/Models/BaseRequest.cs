@@ -9,6 +9,8 @@ namespace WhatsAppDemo.Models
     public class BaseRequest
     {
 
+        public string ApiName { get; set; }
+
         public string SenderMobileNumber
         {
             get

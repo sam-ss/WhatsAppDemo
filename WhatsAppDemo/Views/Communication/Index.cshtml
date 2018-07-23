@@ -65,6 +65,21 @@
         </div>
 
         <div class="row">
+            <div class="mb-3">
+                <h4 class="mb-3">
+                    <span class="text-muted">Api Type</span>
+                </h4>
+                <div class="custom-control custom-radio">
+                    <input id="chatApiRadioButton" name="apiType" type="radio" class="custom-control-input" checked required>
+                    <label class="custom-control-label" for="chatApiRadioButton" onclick="GetAllReceivedResponses('ChatApi')">ChatApi</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input id="weboxAppApiRadioButton" name="apiType" type="radio" class="custom-control-input" required>
+                    <label class="custom-control-label" for="weboxAppApiRadioButton" onclick="GetAllReceivedResponses('WeboxAppApi')">WeboxAppApi</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12 order-md-1">
                 <h4 class="mb-3">
                     <span class="text-muted">Request</span>
@@ -119,6 +134,7 @@
             <div class="order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted">Received Response</span>
+                    <input type="button" value="Refresh" onclick="GetAllReceivedResponses()" />
                 </h4>
                 <table id="tblReceivedResponses" cellpadding="0" cellspacing="0">
                     <tr>
@@ -157,25 +173,38 @@
             GetAllReceivedResponses();
         });
 
-        function GetAllReceivedResponses() {
+        function GetAllReceivedResponses(apiType) {
+            var selectedApiType = "";
 
-            $.ajax({
-                type: "GET",
-                url: "/api/ChatApi/GetRecentResponses",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: OnSuccess,
-                failure: function (response) {
-                    alert(response.d);
-                },
-                error: function (response) {
-                    alert(response.d);
-                }
-            });
+            if (apiType == undefined || apiType == null) {
+
+                if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
+                    selectedApiType = "ChatApi";
+                else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
+                    selectedApiType = "WeboxAppApi";
+            }
+            else
+                selectedApiType = apiType;
+
+            if (selectedApiType != undefined && selectedApiType != null && selectedApiType != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/ChatApi/GetRecentResponses",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: selectedApiType,
+                    success: OnSuccess,
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
         }
 
         function OnSuccess(response) {
-            debugger;
             var model = response;
             var row = $("#tblReceivedResponses tr:last-child").removeAttr("style").clone(true);
             $("#tblReceivedResponses tr").not($("#tblReceivedResponses tr:first-child")).remove();
@@ -232,11 +261,18 @@
         function invokeWhatsAppIntegrationAPI() {
             var mobileNumber = getMobileNumber();
             if (mobileNumber.length == 12) {
+                var selectedApiType = "";
+                if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
+                    selectedApiType = "ChatApi";
+                else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
+                    selectedApiType = "WeboxAppApi";
                 var selectedCommunicationType = $("input[name='communicationType']:checked")[0].id;
                 if (selectedCommunicationType == "messageRadioButton") {
                     var request = new Object();
                     request.recipientMobileNumber = mobileNumber;
                     request.message = $("#message").val();
+                    request.apiName = selectedApiType;
+
                     $.ajax({
                         type: "POST",
                         url: "/api/ChatApi/SendMessage",
@@ -260,6 +296,7 @@
                     var file = $('#fileUpload')[0];
                     formData.append('file', file.files[0]);
                     formData.append('recipientMobileNumber', mobileNumber);
+                    formData.append('apiName', selectedApiType);
 
                     $.ajax({
                         url: '/api/ChatApi/SendImage',
@@ -280,6 +317,7 @@
                     var file = $('#fileUpload')[0];
                     formData.append('file', file.files[0]);
                     formData.append('recipientMobileNumber', mobileNumber);
+                    formData.append('apiName', selectedApiType);
 
                     $.ajax({
                         url: '/api/ChatApi/SendMedia',

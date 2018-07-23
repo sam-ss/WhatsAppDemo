@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WhatsAppDemo.ApiContracts
+namespace WhatsAppDemo.ApiContracts.WeboxAppApi
 {
-    public class Chat
+    public class Media
     {
         public string Token { get; set; }
 
@@ -15,7 +15,10 @@ namespace WhatsAppDemo.ApiContracts
 
         public string Customer_uid { get; set; }
 
-        public string text { get; set; }
+        public string Url { get; set; }
 
+        public string Caption { get; set; }
+
+        public string Description { get; set; }
     }
 }

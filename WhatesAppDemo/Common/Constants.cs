@@ -9,8 +9,8 @@ namespace WhatesAppDemo.Common
     public class Constant
     {
 
-        public const string BaseUrl2 = "https://eu8.chat-api.com/instance6543/";
-        public const string TOKEN2 = "uqtkucbzwtpamanm";
+        public const string BaseUrl2 = "https://eu9.chat-api.com/instance7249/";
+        public const string TOKEN2 = "8txkaxxbx3m6u2fh";
 
         public const string BaseUrl = "https://www.waboxapp.com/api/";
         public const string Send_Chat = "send/chat";

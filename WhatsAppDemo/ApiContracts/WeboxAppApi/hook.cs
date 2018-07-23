@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WhatsAppDemo.ApiContracts
+namespace WhatsAppDemo.ApiContracts.WeboxAppApi
 {
 
     public class Contact

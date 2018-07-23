@@ -48,14 +48,18 @@ namespace WhatsAppDemo.Common
         }
 
 
-        public async Task<HttpResponseMessage> PostAsyncEncodedContent(string apiEndpoint, string jsonRequest, bool addAuthHeader = false, string token = null)
+        public async Task<HttpResponseMessage> PostAsyncEncodedContent(ApiType apiType, string apiEndpoint, string jsonRequest, bool addAuthHeader = false, string token = null)
         {
             HttpResponseMessage response = null;
             try
             {
                 using (var client = new HttpClient())
                 {
-                    var address = string.Format("{0}{1}", Constants.BaseWeboxAppApi, apiEndpoint);
+                    string address = string.Empty;
+                    if (apiType == ApiType.WeboxAppApi)
+                        address = string.Format("{0}{1}", Constants.BaseWeboxAppApi, apiEndpoint);
+                    else if (apiType == ApiType.ChatApi)
+                        address = string.Format("{0}{1}?token={2}", Constants.BaseChatAPI, apiEndpoint, Constants.ChatApiToken);
                     var req = new HttpRequestMessage(HttpMethod.Post, address) { Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json") };
                     response = await client.SendAsync(req);
                 }

@@ -7,18 +7,36 @@ namespace WhatsAppDemo.Common
 {
     public static class Constants
     {
-        public const string BaseWeboxAppApi = "https://www.waboxapp.com/api";
         public const string SenderMobileNumber = "917718842631";
+
+        #region WeboxAppAPI Constants 
+
+        public const string BaseWeboxAppApi = "https://www.waboxapp.com/api";
         public const string WeboxAppApiToken = "b7d232c76a750e0933fd3becafe1203d5b3da12c05415";
-        public const string SendMessagePOSTEndPoint = "/send/chat";
-        public const string SendImagePOSTEndPoint = "/send/image";
-        public const string SendLinkPOSTEndPoint = "/send/link";
-        public const string SendMediaPOSTEndPoint = "/send/media";
-        public const int TimeoutFotHttpsCallMilliSec = 90000;
+        public const string WeboxAppApiSendMessagePOSTEndPoint = "/send/chat";
+        public const string WeboxAppApiSendImagePOSTEndPoint = "/send/image";
+        public const string WeboxAppApiSendLinkPOSTEndPoint = "/send/link";
+        public const string WeboxAppApiSendMediaPOSTEndPoint = "/send/media";
+        public const string WeboxAppApiHooksContainer = "weboxapihookscontainer";
+        public const string WeboxAppApiMediaContainer = "weboxapimediacontainer";
 
-        public const string ApiHooksContainer = "weboxapihookscontainer";
-        public const string ApiMediaContainer = "weboxapimediacontainer";
+        #endregion
+
+        #region ChatAPI Constants 
+
+        public const string BaseChatAPI = "https://eu9.chat-api.com/instance7249";
+        public const string ChatApiToken = "8txkaxxbx3m6u2fh";
+
+        public const string ChatApiSendMessagePOSTEndPoint = "/sendMessage";
+        public const string ChatApiSendImagePOSTEndPoint = "/sendFile";
+        public const string ChatApiSendMediaPOSTEndPoint = "/sendFile";
+
+        public const string ChatApiHooksContainer = "chatapihookscontainer";
+
+        #endregion
+
+
         public const string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=whatsappchatapistorage;AccountKey=j5VmajwdxuxNOw8fp6CX2mGNUTMosW8r9rxo1oF8FoPbGQFSvg9kHHb9UkHKmeOKkF552WuIESeFrDsyo9k0fQ==;EndpointSuffix=core.windows.net";
-
+        public const int TimeoutFotHttpsCallMilliSec = 90000;
     }
 }
