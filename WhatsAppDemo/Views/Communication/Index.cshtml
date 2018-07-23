@@ -10,6 +10,51 @@
     <meta name="viewport" content="width=device-width" />
     <title>Whats App Communicator</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <style type="text/css">
+        table {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+            table th {
+                background-color: #B8DBFD;
+                color: #333;
+                font-weight: bold;
+            }
+
+            table th, table td {
+                padding: 5px;
+                border: 1px solid #ccc;
+            }
+
+            table, table table td {
+                border: 0px solid #ccc;
+            }
+
+        .Pager span {
+            text-align: center;
+            color: #333;
+            display: inline-block;
+            width: 20px;
+            background-color: #B8DBFD;
+            margin-right: 3px;
+            line-height: 150%;
+            border: 1px solid #B8DBFD;
+        }
+
+        .Pager a {
+            text-align: center;
+            display: inline-block;
+            width: 20px;
+            background-color: #ccc;
+            color: #333;
+            border: 1px solid #ccc;
+            margin-right: 3px;
+            line-height: 150%;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -20,62 +65,78 @@
         </div>
 
         <div class="row">
-            <div class="col-md-4 order-md-2 mb-4">
-                <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Received Response</span>
-                </h4>
-                <textarea class="form-control" rows="10" id="comment"></textarea>
-            </div>
-            <div class="col-md-8 order-md-1">
+            <div class="col-md-12 order-md-1">
                 <h4 class="mb-3">
                     <span class="text-muted">Request</span>
                 </h4>
-                <form class="needs-validation" novalidate>
-                    <div class="mb-3">
-                        <h6 class="mb-3">Recipient Mobile Number</h6>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"></span>
-                            </div>
-                            <input type="text" class="form-control" id="recipientMobileNumber" placeholder="+91-###-###-####" required onfocus="this.placeholder = ''" onblur="this.placeholder = '+91-###-###-####'" />
+                <div class="mb-3">
+                    <h6 class="mb-3">Recipient Mobile Number</h6>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"></span>
                         </div>
+                        <input type="text" class="form-control" id="recipientMobileNumber" placeholder="+91-###-###-####" required onfocus="this.placeholder = ''" onblur="this.placeholder = '+91-###-###-####'" />
                     </div>
-                    <div class="mb-3">
-                        <h6 class="mb-3">Communication Type</h6>
-                        <div class="custom-control custom-radio">
-                            <input id="messageRadioButton" name="communicationType" type="radio" class="custom-control-input" checked required>
-                            <label class="custom-control-label" for="messageRadioButton" onclick="toggleFileBrowser('')">Message</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input id="imageRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
-                            <label class="custom-control-label" for="imageRadioButton" onclick="toggleFileBrowser('.jpg,.png,.gif')">Image</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input id="documentRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
-                            <label class="custom-control-label" for="documentRadioButton" onclick="toggleFileBrowser('.xlsx,.docx,.pdf')">Document</label>
-                        </div>
+                </div>
+                <div class="mb-3">
+                    <h6 class="mb-3">Communication Type</h6>
+                    <div class="custom-control custom-radio">
+                        <input id="messageRadioButton" name="communicationType" type="radio" class="custom-control-input" checked required>
+                        <label class="custom-control-label" for="messageRadioButton" onclick="toggleFileBrowser('')">Message</label>
                     </div>
-                    <div class="mb-3" id="messageDiv">
-                        <h6 class="mb-3">Message To be Sent</h6>
-                        <input type="text" class="form-control" id="message" placeholder="Hello This is test message">
+                    <div class="custom-control custom-radio">
+                        <input id="imageRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="imageRadioButton" onclick="toggleFileBrowser('.jpg,.png,.gif')">Image</label>
                     </div>
+                    <div class="custom-control custom-radio">
+                        <input id="documentRadioButton" name="communicationType" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="documentRadioButton" onclick="toggleFileBrowser('.xlsx,.docx,.pdf')">Document</label>
+                    </div>
+                </div>
+                <div class="mb-3" id="messageDiv">
+                    <h6 class="mb-3">Message To be Sent</h6>
+                    <input type="text" class="form-control" id="message" placeholder="Hello This is test message">
+                </div>
 
-                    <div class="mb-3" id="customFileDiv">
-                        <h6 class="mb-3" id="selecImageH6">Select Image</h6>
-                        <div class="custom-file" lang="es">
-                            <form id="uploadImageForm" enctype="multipart/form-data">
-                                <input type="file" class="custom-file-input" id="fileUpload" aria-describedby="fileHelp" accept=".jpg,.gif,.png" onchange="showSelectedFileName(this)">
-                                <label class="custom-file-label" for="fileUpload" id="fileUploadTextPlaceHolder">
-                                    Browse Image...
-                                </label>
-                            </form>
-                        </div>
+                <div class="mb-3" id="customFileDiv">
+                    <h6 class="mb-3" id="selecImageH6">Select Image</h6>
+                    <div class="custom-file" lang="es">
+                        <form id="uploadImageForm" enctype="multipart/form-data">
+                            <input type="file" class="custom-file-input" id="fileUpload" aria-describedby="fileHelp" accept=".jpg,.gif,.png" onchange="showSelectedFileName(this)">
+                            <label class="custom-file-label" for="fileUpload" id="fileUploadTextPlaceHolder">
+                                Browse Image...
+                            </label>
+                        </form>
                     </div>
-                    <button class="btn btn-primary btn-lg btn-block" type="button" onclick="invokeWhatsAppIntegrationAPI()">Send To WhatsApp</button>
-                </form>
+                </div>
+                <button class="btn btn-primary btn-lg btn-block" type="button" onclick="invokeWhatsAppIntegrationAPI()">Send To WhatsApp</button>
             </div>
         </div>
-
+        <div class="row margin-top:20px;">
+            </br>
+        </div>
+        <div class="row">
+            <div class="order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Received Response</span>
+                </h4>
+                <table id="tblReceivedResponses" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th>From</th>
+                        <th>Number</th>
+                        <th>Time</th>
+                        <th>Response</th>
+                    </tr>
+                    <tr style="display:none">
+                        <td>ReceivedFrom</td>
+                        <td>ReceivedFromNumber</td>
+                        <td>ReceivedAtDisplay</td>
+                        <td>Response</td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
         <footer class="my-4 pt-1 text-muted text-center text-small">
             <p class="mb-1">&copy; 2017-2018 Xpanxion India Pvt. Ltd.</p>
             <ul class="list-inline">
@@ -93,7 +154,41 @@
         $(document).ready(function () {
             $('#customFileDiv').hide();
             $('#messageDiv').show();
+            GetAllReceivedResponses();
         });
+
+        function GetAllReceivedResponses() {
+
+            $.ajax({
+                type: "GET",
+                url: "/api/ChatApi/GetRecentResponses",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        function OnSuccess(response) {
+            debugger;
+            var model = response;
+            var row = $("#tblReceivedResponses tr:last-child").removeAttr("style").clone(true);
+            $("#tblReceivedResponses tr").not($("#tblReceivedResponses tr:first-child")).remove();
+            $.each(model, function () {
+                var eachReceivedResponse = this;
+                $("td", row).eq(0).html(eachReceivedResponse.receivedFrom);
+                $("td", row).eq(1).html(eachReceivedResponse.receivedFromNumber);
+                $("td", row).eq(2).html(eachReceivedResponse.receivedAtDisplay);
+                $("td", row).eq(3).html(eachReceivedResponse.response);
+                $("#tblReceivedResponses").append(row);
+                row = $("#tblReceivedResponses tr:last-child").clone(true);
+            });
+        };
 
         function showSelectedFileName(fileUpload) {
             if (fileUpload.files != null && fileUpload.files != undefined && fileUpload.files.length > 0) {
