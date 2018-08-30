@@ -11,6 +11,10 @@ namespace WhatsAppDemo.Models
 
         public string ReceivedFromNumber { get; set; }
 
+        public string SendTo { get; set; }
+
+        public string SendToNumber { get; set; }
+
         public string ResponseType { get; set; }
 
         public object Response { get; set; }
@@ -24,5 +28,6 @@ namespace WhatsAppDemo.Models
                 return ReceivedAt.ToString(@"{dd/MM/yyyy hh:mm:ss tt}");
             }
         }
+
     }
 }

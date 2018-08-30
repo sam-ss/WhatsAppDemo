@@ -60,7 +60,7 @@ namespace WhatsAppDemo.Controllers
                 if (request.File.Length > 0)
                 {
                     var tempPath = Path.GetTempFileName();
-
+                    tempPath = tempPath.Insert(tempPath.IndexOf(".tmp") - 1, Guid.NewGuid().ToString());
                     using (var stream = new FileStream(tempPath, FileMode.Create))
                     {
                         request.File.CopyToAsync(stream);
@@ -82,7 +82,7 @@ namespace WhatsAppDemo.Controllers
                     }
                     else if (apiType == ApiType.ChatApi)
                     {
-                        Byte[] bytes = System.IO.File.ReadAllBytes(tempPath);
+                        Byte[] bytes = this.ReadAllBytes2(tempPath);//System.IO.File.ReadAllBytes(tempPath);
 
                         if (request.File.FileName.Contains(".jpg"))
                             request.Url = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(bytes));
@@ -112,6 +112,7 @@ namespace WhatsAppDemo.Controllers
                 if (request.File.Length > 0)
                 {
                     var tempPath = Path.GetTempFileName();
+                    tempPath = tempPath.Insert(tempPath.IndexOf(".tmp") - 1, Guid.NewGuid().ToString());
                     using (var stream = new FileStream(tempPath, FileMode.Create))
                     {
                         request.File.CopyToAsync(stream);
@@ -132,16 +133,15 @@ namespace WhatsAppDemo.Controllers
                     }
                     else if (apiType == ApiType.ChatApi)
                     {
-                        Byte[] bytes = System.IO.File.ReadAllBytes(tempPath);
+                        Byte[] bytes = this.ReadAllBytes2(tempPath); // System.IO.File.ReadAllBytes(tempPath);
 
                         if (request.File.FileName.Contains(".xlsx"))
                             request.Url = string.Format("data:attachment/xlsx;base64,{0}", Convert.ToBase64String(bytes));
-                        /*
-                        else if (request.File.FileName.Contains(".png"))
-                            request.Url = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bytes));
-                        else if (request.File.FileName.Contains(".bmp"))
-                            request.Url = string.Format("data:image/bmp;base64,{0}", Convert.ToBase64String(bytes));
-                        */
+                        else if (request.File.FileName.Contains(".pdf"))
+                            request.Url = string.Format("data:application/pdf;base64,{0}", Convert.ToBase64String(bytes));
+                        else if (request.File.FileName.Contains(".docx"))
+                            request.Url = string.Format("data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,{0}", Convert.ToBase64String(bytes));
+
                         ChatApiServiceBridge serviceBridge = new ChatApiServiceBridge();
                         serviceBridge.SendWhatsAppMedia(request);
 
@@ -245,6 +245,8 @@ namespace WhatsAppDemo.Controllers
 
 
                 List<ReceviedResponseModel> receviedResponses = MapResponseToHoks(receivedHooks);
+                if (receviedResponses != null && receviedResponses.Count > 0)
+                    receviedResponses = receviedResponses.OrderByDescending(eachResponse => eachResponse.ReceivedAt).ToList<ReceviedResponseModel>();
                 return Json(receviedResponses);
             }
             else if (apiType == ApiType.ChatApi)
@@ -267,6 +269,9 @@ namespace WhatsAppDemo.Controllers
 
 
                 List<ReceviedResponseModel> receviedResponses = MapResponseToHoks(receivedHooks);
+                if (receviedResponses != null && receviedResponses.Count > 0)
+                    receviedResponses = receviedResponses.OrderByDescending(eachResponse => eachResponse.ReceivedAt).ToList<ReceviedResponseModel>();
+
                 return Json(receviedResponses);
             }
 
@@ -334,12 +339,14 @@ namespace WhatsAppDemo.Controllers
 
             receivedHooks.ForEach(eachHook =>
             {
-                if (!eachHook.Messages[0].FromMe)
+                if (eachHook.Messages != null && eachHook.Messages.Count > 0)
                 {
                     receivedResponses.Add(new ReceviedResponseModel
                     {
-                        ReceivedFrom = eachHook.Messages[0].SenderName,
-                        ReceivedFromNumber = eachHook.Messages[0].ChatId.Substring(1, eachHook.Messages[0].ChatId.IndexOf("@")),
+                        ReceivedFrom = !eachHook.Messages[0].FromMe ? eachHook.Messages[0].SenderName : Constants.SelfName,
+                        ReceivedFromNumber = !eachHook.Messages[0].FromMe ? eachHook.Messages[0].ChatId.Substring(0, eachHook.Messages[0].ChatId.IndexOf("@")) : Constants.SenderMobileNumber,
+                        SendTo = eachHook.Messages[0].FromMe ? eachHook.Messages[0].SenderName : Constants.SelfName,
+                        SendToNumber = eachHook.Messages[0].FromMe ? eachHook.Messages[0].ChatId.Substring(0, eachHook.Messages[0].ChatId.IndexOf("@")) : Constants.SenderMobileNumber,
                         Response = eachHook.Messages[0].Body,
                         ReceivedAt = eachHook.Messages[0].Time.FromTimeStampToDateTime().Add(new TimeSpan(5, 30, 00))
                     });
@@ -347,6 +354,19 @@ namespace WhatsAppDemo.Controllers
             });
 
             return receivedResponses;
+        }
+
+
+        private byte[] ReadAllBytes2(string filePath)
+        {
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    fs.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
         }
     }
 }

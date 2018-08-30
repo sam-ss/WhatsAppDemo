@@ -16,5 +16,6 @@ namespace WhatsAppDemo.Common
 
             return origin.AddSeconds(Convert.ToDouble(jsontimestamp));
         }
+
     }
 }

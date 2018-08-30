@@ -24,8 +24,8 @@ namespace WhatsAppDemo.Common
 
         #region ChatAPI Constants 
 
-        public const string BaseChatAPI = "https://eu9.chat-api.com/instance7249";
-        public const string ChatApiToken = "8txkaxxbx3m6u2fh";
+        public const string BaseChatAPI = "https://eu5.chat-api.com/instance10189";
+        public const string ChatApiToken = "0gbeuxgajdhb3a3u";
 
         public const string ChatApiSendMessagePOSTEndPoint = "/sendMessage";
         public const string ChatApiSendImagePOSTEndPoint = "/sendFile";
@@ -38,5 +38,7 @@ namespace WhatsAppDemo.Common
 
         public const string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=whatsappchatapistorage;AccountKey=j5VmajwdxuxNOw8fp6CX2mGNUTMosW8r9rxo1oF8FoPbGQFSvg9kHHb9UkHKmeOKkF552WuIESeFrDsyo9k0fQ==;EndpointSuffix=core.windows.net";
         public const int TimeoutFotHttpsCallMilliSec = 90000;
+        public const string SelfMobileNumber = "917718842631";
+        public const string SelfName = "Amit Ugane";
     }
 }

@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/WhatsAppCommunicator",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:54181/",
       "sslPort": 0
@@ -24,6 +28,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:54182/"
+    },
+    "LocalIIS": {
+      "commandName": "IIS",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      }
     }
   }
 }

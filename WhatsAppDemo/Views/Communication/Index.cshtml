@@ -58,28 +58,27 @@
 </head>
 <body>
 
-    <div class="container">
-        <div class="py-5 text-center">
-            <h2>WhatsAppp Communicator</h2>
-            <p class="lead">Send Messages , Documents , Links To Any whatsapp account.</p>
+    <div class="container-fluid">
+        <h1 class="text-center">Xpanxion WhatsAppp Communicator</h1>
+        <div class="mb-4" style="text-align:center">
+            <p class="lead">Send/Receive Messages , Images and Documents To/From Any whatsapp account.</p>
         </div>
-
-        <div class="row">
+        @*<div class="row" style="margin-left:50px!important; margin-right: 50px!important">
             <div class="mb-3">
                 <h4 class="mb-3">
                     <span class="text-muted">Api Type</span>
                 </h4>
                 <div class="custom-control custom-radio">
                     <input id="chatApiRadioButton" name="apiType" type="radio" class="custom-control-input" checked required>
-                    <label class="custom-control-label" for="chatApiRadioButton" onclick="GetAllReceivedResponses('ChatApi')">ChatApi</label>
+                    <label class="custom-control-label" for="chatApiRadioButton" onclick="getAllReceivedResponses('ChatApi')">ChatApi</label>
                 </div>
                 <div class="custom-control custom-radio">
                     <input id="weboxAppApiRadioButton" name="apiType" type="radio" class="custom-control-input" required>
-                    <label class="custom-control-label" for="weboxAppApiRadioButton" onclick="GetAllReceivedResponses('WeboxAppApi')">WeboxAppApi</label>
+                    <label class="custom-control-label" for="weboxAppApiRadioButton" onclick="getAllReceivedResponses('WeboxAppApi')">WeboxAppApi</label>
                 </div>
             </div>
-        </div>
-        <div class="row">
+        </div>*@
+        <div class="row" style="margin-left:50px!important; margin-right: 50px!important">
             <div class="col-md-12 order-md-1">
                 <h4 class="mb-3">
                     <span class="text-muted">Request</span>
@@ -130,22 +129,26 @@
         <div class="row margin-top:20px;">
             </br>
         </div>
-        <div class="row">
+        <div class="row" style="margin-left:50px!important; margin-right: 50px!important">
             <div class="order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted">Received Response</span>
-                    <input type="button" value="Refresh" onclick="GetAllReceivedResponses()" />
+                    <a class="btn btn-link" href="javascript:void(0)" onclick="refreshWindow()">Refresh</a>
                 </h4>
                 <table id="tblReceivedResponses" cellpadding="0" cellspacing="0">
                     <tr>
-                        <th>From</th>
-                        <th>Number</th>
-                        <th>Time</th>
-                        <th>Response</th>
+                        <th width="10%">From</th>
+                        <th width="10%">From No#</th>
+                        <th width="10%">To</th>
+                        <th width="10%">To No#</th>
+                        <th width="20%">Time</th>
+                        <th width="40%">Response</th>
                     </tr>
                     <tr style="display:none">
                         <td>ReceivedFrom</td>
                         <td>ReceivedFromNumber</td>
+                        <td>SendTo</td>
+                        <td>SendToNumber</td>
                         <td>ReceivedAtDisplay</td>
                         <td>Response</td>
                     </tr>
@@ -170,21 +173,26 @@
         $(document).ready(function () {
             $('#customFileDiv').hide();
             $('#messageDiv').show();
-            GetAllReceivedResponses();
+            getAllReceivedResponses();
         });
 
-        function GetAllReceivedResponses(apiType) {
-            var selectedApiType = "";
 
-            if (apiType == undefined || apiType == null) {
+        function refreshWindow() {
+            window.location.reload(true);
+        }
 
-                if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
-                    selectedApiType = "ChatApi";
-                else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
-                    selectedApiType = "WeboxAppApi";
-            }
-            else
-                selectedApiType = apiType;
+        function getAllReceivedResponses(apiType) {
+            var selectedApiType = "ChatApi";
+
+            //if (apiType == undefined || apiType == null) {
+
+            //    if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
+            //        selectedApiType = "ChatApi";
+            //    else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
+            //        selectedApiType = "WeboxAppApi";
+            //}
+            //else
+            //    selectedApiType = apiType;
 
             if (selectedApiType != undefined && selectedApiType != null && selectedApiType != "") {
                 $.ajax({
@@ -212,8 +220,10 @@
                 var eachReceivedResponse = this;
                 $("td", row).eq(0).html(eachReceivedResponse.receivedFrom);
                 $("td", row).eq(1).html(eachReceivedResponse.receivedFromNumber);
-                $("td", row).eq(2).html(eachReceivedResponse.receivedAtDisplay);
-                $("td", row).eq(3).html(eachReceivedResponse.response);
+                $("td", row).eq(2).html(eachReceivedResponse.sendTo);
+                $("td", row).eq(3).html(eachReceivedResponse.sendToNumber);
+                $("td", row).eq(4).html(eachReceivedResponse.receivedAtDisplay);
+                $("td", row).eq(5).html(eachReceivedResponse.response);
                 $("#tblReceivedResponses").append(row);
                 row = $("#tblReceivedResponses tr:last-child").clone(true);
             });
@@ -261,11 +271,11 @@
         function invokeWhatsAppIntegrationAPI() {
             var mobileNumber = getMobileNumber();
             if (mobileNumber.length == 12) {
-                var selectedApiType = "";
-                if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
-                    selectedApiType = "ChatApi";
-                else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
-                    selectedApiType = "WeboxAppApi";
+                var selectedApiType = "ChatApi";
+                //if ($("input[name='apiType']:checked")[0].id == "chatApiRadioButton")
+                //    selectedApiType = "ChatApi";
+                //else if ($("input[name='apiType']:checked")[0].id == "weboxAppApiRadioButton")
+                //    selectedApiType = "WeboxAppApi";
                 var selectedCommunicationType = $("input[name='communicationType']:checked")[0].id;
                 if (selectedCommunicationType == "messageRadioButton") {
                     var request = new Object();
